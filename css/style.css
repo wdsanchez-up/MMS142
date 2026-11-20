@@ -736,10 +736,13 @@ body {
 
 .size-guide-image {
     display: block;
+    width: 100%;
     max-width: 720px;
-    margin: 1.5rem 0;
+    height: auto;
+    margin: clamp(0.75rem, 2vw, 1.5rem) 0;
     background: #fff;
     border-radius: 16px;
+    box-sizing: border-box;
 }
 
 .size-chart th,
