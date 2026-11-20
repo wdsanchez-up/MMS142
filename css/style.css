@@ -357,18 +357,28 @@ a.btn.hero-button:focus {
 
 .contact-detail {
     padding: 40px;
+    min-width: 0;
+    max-width: 100%;
 }
 .contact-detail p {
     margin-bottom: 0px;
 }
+
 .contact-detail a {
-    display: inline-block;
+    display: block;
+    width: fit-content;
+    max-width: 100%;
     margin-top: 0;
-    line-height: 1;
+    line-height: 1.2;
     color: black;
     letter-spacing: 2px;
     text-decoration: none;
     font-weight: lighter;
+    font-size: min(16px, 3.5vw);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
 }
 
 .col-md-6 {
@@ -736,10 +746,10 @@ body {
 
 .size-guide-image {
     display: block;
-    width: 100%;
-    max-width: 720px;
+    width: auto;
+    max-width: 100%;
     height: auto;
-    margin: clamp(0.75rem, 2vw, 1.5rem) 0;
+    margin: 1.5rem 0;
     background: #fff;
     border-radius: 16px;
     box-sizing: border-box;
