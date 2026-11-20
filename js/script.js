@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function () {
 
     const thumbnails = document.querySelectorAll(".thumbnail");
@@ -12,18 +13,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const orderLink = document.getElementById("order-now");
     const contactForm = document.getElementById("contact-form");
 
+    // PRODUCT GALLERY
     function showImage(src, alt) {
-        if (!mainImage || !src) {
-            return;
-        }
+        if (!mainImage || !src) return;
 
         mainImage.style.opacity = "0";
 
         setTimeout(function () {
             mainImage.src = src;
+
             if (alt) {
                 mainImage.alt = alt;
             }
+
             mainImage.style.opacity = "1";
         }, 150);
 
@@ -34,13 +36,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     thumbnails.forEach(function (thumbnail) {
         thumbnail.addEventListener("click", function () {
+
             showImage(this.dataset.image, this.dataset.alt);
 
             colorButtons.forEach(function (button) {
-                button.classList.toggle("active", button.dataset.image === thumbnail.dataset.image);
+                button.classList.toggle(
+                    "active",
+                    button.dataset.image === thumbnail.dataset.image
+                );
             });
 
             const activeColor = document.querySelector(".color-btn.active");
+
             if (colorInput && activeColor) {
                 colorInput.value = activeColor.dataset.color;
             }
@@ -49,8 +56,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // COLOR SELECTION
     colorButtons.forEach(function (button) {
         button.addEventListener("click", function () {
+
             colorButtons.forEach(function (item) {
                 item.classList.remove("active");
             });
@@ -62,12 +71,15 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             showImage(this.dataset.image, this.dataset.alt);
+
             updateOrderLink();
         });
     });
 
+    // SIZE SELECTION
     sizeButtons.forEach(function (button) {
         button.addEventListener("click", function () {
+
             sizeButtons.forEach(function (item) {
                 item.classList.remove("active");
             });
@@ -82,8 +94,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // QUANTITY CONTROLS
     if (decreaseButton && quantityInput) {
         decreaseButton.addEventListener("click", function () {
+
             let quantity = parseInt(quantityInput.value, 10) || 1;
 
             if (quantity > 1) {
@@ -96,133 +110,113 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (increaseButton && quantityInput) {
         increaseButton.addEventListener("click", function () {
+
             let quantity = parseInt(quantityInput.value, 10) || 1;
+
             quantityInput.value = quantity + 1;
+
             updateOrderLink();
         });
     }
 
     if (quantityInput) {
-        quantityInput.addEventListener("change", updateOrderLink);
-    }
+        quantityInput.addEventListener("change", function () {
 
-    function updateOrderLink() {
-        if (!orderLink) {
-            return;
-        }
+            let quantity = parseInt(quantityInput.value, 10);
 
-        const productName = document.getElementById("product-name");
-        const price = document.querySelector(".product-price");
-        const name = productName ? productName.textContent.trim() : "T-shirt";
-        const color = colorInput ? colorInput.value : "";
-        const size = sizeInput ? sizeInput.value : "";
-        const quantity = quantityInput ? quantityInput.value : "1";
-        const priceText = price ? price.textContent.trim() : "₱499";
-        const body = [
-            "Hello Spring,",
-            "",
-            "I would like to order:",
-            "",
-            "Product: " + name,
-            "Color: " + color,
-            "Size: " + size,
-            "Quantity: " + quantity,
-            "Price: " + priceText,
-            "",
-            "Thank you."
-        ].join("\n");
+            if (!Number.isFinite(quantity) || quantity < 1) {
+                quantity = 1;
+            }
 
-        orderLink.href = "mailto:orders@examplewebsite142.com?subject="
-            + encodeURIComponent("Order: " + name)
-            + "&body="
-            + encodeURIComponent(body);
-    }
+            quantityInput.value = quantity;
 
-    updateOrderLink();
-
-    if (contactForm) {
-        contactForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            const name = document.getElementById("full-name").value.trim();
-            const email = document.getElementById("email-address").value.trim();
-            const subject = document.getElementById("subject").value.trim();
-            const message = document.getElementById("message").value.trim();
-            const body = [
-                "Name: " + name,
-                "Email: " + email,
-                "",
-                message
-            ].join("\n");
-
-            window.location.href = "mailto:hello@examplewebsite142.com?subject="
-                + encodeURIComponent(subject)
-                + "&body="
-                + encodeURIComponent(body);
+            updateOrderLink();
         });
     }
 
+    // ORDER NOW EMAIL FUNCTION
+    function updateOrderLink() {
 
-document.addEventListener("DOMContentLoaded", function () {
+        if (!orderLink) return;
 
-    const orderButton = document.getElementById("order-now");
+        const productElement = document.getElementById("product-name");
+        const priceElement = document.querySelector(".product-price");
 
-    if (!orderButton) return;
+        const productName = productElement
+            ? productElement.textContent.trim()
+            : "T-shirt";
 
-    orderButton.addEventListener("click", function (event) {
+        const color = colorInput ? colorInput.value : "Not selected";
+        const size = sizeInput ? sizeInput.value : "Not selected";
 
-        event.preventDefault();
+        const quantity = Math.max(
+            1,
+            parseInt(quantityInput ? quantityInput.value : "1", 10) || 1
+        );
 
-        // Get product information
-        const productName = document.getElementById("product-name").textContent.trim();
+        const unitPrice = 499;
+        const totalPrice = unitPrice * quantity;
 
-        const color = document.getElementById("product-color").value;
+        const body = [
+            "Hello Spring,",
+            "",
+            "I would like to place an order.",
+            "",
+            "PRODUCT DETAILS",
+            "Product: " + productName,
+            "Color: " + color,
+            "Size: " + size,
+            "Quantity: " + quantity,
+            "",
+            "ORDER SUMMARY",
+            "Unit Price: ₱" + unitPrice,
+            "Total Amount: ₱" + totalPrice,
+            "",
+            "Thank you!"
+        ].join("\n");
 
-        const size = document.getElementById("product-size").value;
-
-        const quantity = parseInt(
-            document.getElementById("product-quantity").value
-        ) || 1;
-
-        // Product price
-        const price = 499;
-        const total = price * quantity;
-
-        // Email details
         const recipient = "orders@examplewebsite142.com";
 
         const subject = encodeURIComponent(
             "Order Request - " + productName
         );
 
-        const body = encodeURIComponent(
-            "Hello! I would like to place an order.\n\n" +
+        const emailBody = encodeURIComponent(body);
 
-            "PRODUCT DETAILS\n" +
-            "Product: " + productName + "\n" +
-            "Color: " + color + "\n" +
-            "Size: " + size + "\n" +
-            "Quantity: " + quantity + "\n\n" +
-
-            "ORDER SUMMARY\n" +
-            "Unit Price: ₱" + price + "\n" +
-            "Total Amount: ₱" + total + "\n\n" +
-
-            "Thank you!"
-        );
-
-        // Open customer's email application
-        const mailtoLink =
+        orderLink.href =
             "mailto:" + recipient +
             "?subject=" + subject +
-            "&body=" + body;
+            "&body=" + emailBody;
+    }
 
-        window.location.href = mailtoLink;
+    updateOrderLink();
 
-    });
+    // CONTACT FORM EMAIL FUNCTION
+    if (contactForm) {
 
-});
+        contactForm.addEventListener("submit", function (event) {
 
-    
+            event.preventDefault();
+
+            const name = document.getElementById("full-name").value.trim();
+            const email = document.getElementById("email-address").value.trim();
+            const subject = document.getElementById("subject").value.trim();
+            const message = document.getElementById("message").value.trim();
+
+            const body = [
+                "Name: " + name,
+                "Email: " + email,
+                "",
+                "Message:",
+                message
+            ].join("\n");
+
+            window.location.href =
+                "mailto:hello@examplewebsite142.com?subject=" +
+                encodeURIComponent(subject) +
+                "&body=" +
+                encodeURIComponent(body);
+        });
+    }
 
 });
